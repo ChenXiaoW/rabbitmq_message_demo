@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: producter
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/message?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useAffectedRows=true&serverTimezone=GMT%2B8&useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      min-idle: 2
+      max-active: 10
+      initial-size: 4
+      max-wait: 600
+      # \u7528\u6765\u68C0\u6D4B\u8FDE\u63A5\u662F\u5426\u6709\u6548\u7684sql\uFF0C\u8981\u6C42\u662F\u4E00\u4E2A\u67E5\u8BE2\u8BED\u53E5\uFF0C\u5E38\u7528select 'x'\u3002
+      # \u5982\u679CvalidationQuery\u4E3Anull\uFF0CtestOnBorrow\u3001testOnReturn\u3001testWhileIdle\u90FD\u4E0D\u4F1A\u8D77\u4F5C\u7528\u3002
+      validation-query: SELECT 1
+      # \u7533\u8BF7\u8FDE\u63A5\u65F6\u6267\u884CvalidationQuery\u68C0\u6D4B\u8FDE\u63A5\u662F\u5426\u6709\u6548 \u9ED8\u8BA4\u4E3Atrue
+      test-on-borrow: true
+      # \u5F52\u8FD8\u8FDE\u63A5\u65F6\u6267\u884CvalidationQuery\u68C0\u6D4B\u8FDE\u63A5\u662F\u5426\u6709\u6548 \u9ED8\u8BA4\u4E3Afalse
+      test-on-return: false
+      # \u7533\u8BF7\u8FDE\u63A5\u7684\u65F6\u5019\u68C0\u6D4B\uFF0C\u5982\u679C\u7A7A\u95F2\u65F6\u95F4\u5927\u4E8EtimeBetweenEvictionRunsMillis\uFF0C\u6267\u884CvalidationQuery\u68C0\u6D4B\u8FDE\u63A5\u662F\u5426\u6709\u6548\u3002
+      test-while-idle: true
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: test
+    connection-timeout: 15000
+    publisher-returns: true
+    publisher-confirm-type: correlated
+
+mybatis:
+  type-aliases-package: ink.cwblog.producter.dao
+  mapper-locations: classpath:sqlclient/*.xml

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ink.cwblog.producter.dao.MessageLogDAO">
+	<!-- 消息入库 -->
+    <insert id="insertMessageLog" parameterType="MessageLog">
+        insert into msg_log
+		(
+			`msg_id`,
+			`msg`,
+			`exchange`,
+			`routing_key`,
+			`status`,
+			`try_count`,
+			`next_try_time`,
+			`create_time`,
+			`update_time`
+		)
+		values
+		(
+			#{messageId},
+			#{message},
+			#{exchange},
+			#{routingKey},
+			#{status},
+			#{retryCount},
+			#{nextTryTime},
+			#{createTime},
+			#{updateTime}
+		)
+    </insert>
+	<!-- 更新消息状态 -->
+	<update id="updateMessageLogStatus" parameterType="MessageLog">
+		UPDATE msg_log
+		SET STATUS = #{status}
+		WHERE
+			msg_log = #{messageId}
+	</update>
+	<!-- 查询需要重试的消息 -->
+	<select id="queryRetryMessage" resultType="MessageLog">
+		select
+		`msg_id`,
+		`msg`,
+		`exchange`,
+		`routing_key`,
+		`status`,
+		`try_count`,
+		`next_try_time`,
+		`create_time`,
+		`update_time`
+		from
+		msg_log
+		<where>
+			<if test="status != null and status != ''"> and status = #{status} </if>
+			<if test="retryCount != null and retryCount != ''"> and try_count &lt; ${retryCount} </if>
+		</where>
+		<if test="limit != null and limit !=''">
+			limit #{limit}
+		</if>
+	</select>
+	<!-- 更新消息重试次数 -->
+	<update id="updateMessageLogRetryCount" parameterType="MessageLog">
+		UPDATE msg_log
+		SET try_count = #{retryCount}
+		WHERE
+			msg_log = #{messageId}
+	</update>
+</mapper>
