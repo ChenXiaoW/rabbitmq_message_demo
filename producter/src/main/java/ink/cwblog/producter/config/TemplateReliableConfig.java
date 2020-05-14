@@ -14,13 +14,18 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Date;
 
+/**
+ * @description: 自定义rabbitTemplate
+ * @author: ChenWei
+ * @create: 2020/5/14 - 23:28
+ **/
+
 @Slf4j
 @Configuration
 public class TemplateReliableConfig {
 
 	@Autowired
 	MessageLogDAO messageLogDAO;
-
 
 
 	@Bean(name = "templateReliable")
@@ -46,7 +51,7 @@ public class TemplateReliableConfig {
 							.setMessageId(correlationData.getId())
 							.setUpdateTime(new Date());
 				}else {
-					log.debug("消息发送到Exchange失败，相关数据：{}，原因：{}", JSON.toJSONString(correlationData),cause);
+					log.error("消息发送到Exchange失败，相关数据：{}，原因：{}", JSON.toJSONString(correlationData), cause);
 					// 更新消息状态为投递失败
 					messageLog = new MessageLog()
 							.setStatus(2)
@@ -65,7 +70,7 @@ public class TemplateReliableConfig {
 		rabbitTemplate.setReturnCallback(new RabbitTemplate.ReturnCallback() {
 			@Override
 			public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
-				log.debug("消息路由到队列失败,当前消息：{}，回应码：{}，回应信息：{}，交换机：{}，路由Key：{}",
+				log.error("消息路由到队列失败,当前消息：{}，回应码：{}，回应信息：{}，交换机：{}，路由Key：{}",
 						JSON.toJSONString(message),replyCode,replyText,exchange,routingKey);
 				//更新消息库状态
 				MessageLog messageLog = new MessageLog()

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ink.cwblog.producter.dao.MessageLogDAO">
+
+    <resultMap id="paramsMap" type="MessageLog">
+        <id column="msg_id" property="messageId" jdbcType="VARCHAR" javaType="String"/>
+        <result column="msg" property="message" jdbcType="VARCHAR" javaType="String"/>
+        <result column="exchange" property="exchange" jdbcType="VARCHAR" javaType="String"/>
+        <result column="routing_key" property="routingKey" jdbcType="VARCHAR" javaType="String"/>
+        <result column="status" property="status" jdbcType="INTEGER" javaType="Integer"/>
+        <result column="try_count" property="retryCount" jdbcType="INTEGER" javaType="Integer"/>
+        <result column="next_try_time" property="nextTryTime" jdbcType="DATE" javaType="java.sql.Date"/>
+        <result column="create_time" property="createTime" jdbcType="DATE" javaType="java.sql.Date"/>
+        <result column="update_time" property="updateTime" jdbcType="DATE" javaType="java.sql.Date"/>
+    </resultMap>
+
+
+    <!-- 消息入库 -->
+    <insert id="insertMessageLog" parameterType="MessageLog">
+        insert into msg_log
+		(
+			`msg_id`,
+			`msg`,
+			`exchange`,
+			`routing_key`,
+			`status`,
+			`try_count`,
+			`next_try_time`,
+			`create_time`,
+			`update_time`
+		)
+		values
+		(
+			#{messageId},
+			#{message},
+			#{exchange},
+			#{routingKey},
+			#{status},
+			#{retryCount},
+			#{nextTryTime},
+			#{createTime},
+			#{updateTime}
+		)
+    </insert>
+    <!-- 更新消息状态 -->
+    <update id="updateMessageLogStatus" parameterType="MessageLog">
+		UPDATE msg_log
+		SET STATUS = #{status},update_time = #{updateTime}
+		WHERE
+			msg_id = #{messageId}
+	</update>
+    <!-- 查询需要重试的消息 -->
+    <select id="queryRetryMessage" resultType="MessageLog" resultMap="paramsMap">
+        select
+        `msg_id`,
+        `msg`,
+        `exchange`,
+        `routing_key`,
+        `status`,
+        `try_count`,
+        `next_try_time`,
+        `create_time`,
+        `update_time`
+        from
+        msg_log
+        <where>
+            <if test="status != null and status != ''">status = #{status}</if>
+            <if test="retryCount != null and retryCount != ''">and try_count &lt; ${retryCount}</if>
+        </where>
+        <if test="limit != null and limit !=''">
+            limit #{limit}
+        </if>
+    </select>
+    <!-- 更新消息重试次数 -->
+    <update id="updateMessageLogRetryCount" parameterType="MessageLog">
+		UPDATE msg_log
+		SET try_count = #{retryCount},update_time = #{updateTime}
+		WHERE
+			msg_id = #{messageId}
+	</update>
+</mapper>

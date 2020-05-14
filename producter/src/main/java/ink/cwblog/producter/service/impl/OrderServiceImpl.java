@@ -72,6 +72,7 @@ public class OrderServiceImpl implements OrderService {
 			//发送消息， 将订单ID作为消息唯一ID
 			rabbitTemplate.convertAndSend(exchange,routingKey,JSON.toJSONString(order),new CorrelationData(uuid));
 			order.setOrderInfo(null);
+			//不管消息是否推送成功，只要消息入库即可，即使推送不成功仍有补偿机制保障
 			return new BaseModel().setCode(200).setMessage("消息推送成功").setResult("success").setData(order);
 		}catch (Exception e){
 			log.error("消息推送失败：{}",e);

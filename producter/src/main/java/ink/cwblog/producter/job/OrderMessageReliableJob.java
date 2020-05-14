@@ -35,8 +35,9 @@ public class OrderMessageReliableJob {
 	/**
 	 * 消息重试定时任务
 	 */
-	@Scheduled(cron = "10/10 * * * * ?")
+	@Scheduled(cron = "*/30 * * * * ?")
 	public void reliableJob() {
+		log.info("--------------定时触发补偿机制--------------");
 		Map<String, Object> params = new HashMap<>(4);
 		//参数说明：获取状态为2：投递失败，并且retryCount次数小于3，每次获取10条记录
 		params.put("status", 2);
@@ -47,6 +48,7 @@ public class OrderMessageReliableJob {
 			return;
 		}
 		try {//循环遍历消息，并且重新发送
+			log.info("需要补偿的消息数量：{}", messageLogs.size());
 			for (MessageLog messageLog : messageLogs) {
 				messageLog.setRetryCount(messageLog.getRetryCount() + 1);
 				//todo mq重试时间策略，每次重试时间不同
