@@ -49,7 +49,6 @@ public class ConsumerService {
 	@Transactional(rollbackFor = Exception.class)
 	public void consumerOrderMsg(Message message, Channel channel) {
 		log.info("message：{}", message);
-		log.info("correlationData：{}", message.getMessageProperties().getCorrelationId());
 
 		//通过message唯一ID来防止重复消费：为什么需要防止重复消费，消费端没有在有效时间内确认消息已消费
 		//1 - 获取message唯一ID
