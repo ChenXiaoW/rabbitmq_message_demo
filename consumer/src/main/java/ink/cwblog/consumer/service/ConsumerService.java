@@ -63,6 +63,7 @@ public class ConsumerService {
 				if (result == 0) {
 					channel.basicNack(deliveryTag, false, false);
 					log.error("消费结果：消息签收失败");
+					messageLogDAO.updateMessageLogStatus(new MessageLog().setMessageId(messageId).setStatus(4));
 				} else {
 					channel.basicAck(deliveryTag, false);
 					log.info("消费结果：消息签收成功，消息唯一ID：{}", messageId);
