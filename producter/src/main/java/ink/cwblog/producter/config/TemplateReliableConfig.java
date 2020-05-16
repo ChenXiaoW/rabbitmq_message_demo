@@ -8,6 +8,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.SerializerMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +35,7 @@ public class TemplateReliableConfig {
 		rabbitTemplate.setConnectionFactory(connectionFactory);
 		//设置开启mandatory,才能触发回调函数
 		rabbitTemplate.setMandatory(true);
-
+		rabbitTemplate.setMessageConverter(new SerializerMessageConverter());
 
 		/**
 		 * 设置消息确认回调

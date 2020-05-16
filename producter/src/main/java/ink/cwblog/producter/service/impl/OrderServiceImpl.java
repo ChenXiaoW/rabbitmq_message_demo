@@ -8,6 +8,8 @@ import ink.cwblog.producter.model.Order;
 import ink.cwblog.producter.service.OrderService;
 import ink.cwblog.producter.util.ConstantUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
 	/**
 	 * 路由键
 	 */
-	final String routingKey ="order.mail";
+	final String routingKey = "order.mail.key";
 
 
 
@@ -52,6 +54,7 @@ public class OrderServiceImpl implements OrderService {
 	 */
 	@Override
 	public BaseModel sendOrder(Order order) {
+
 		String uuid = ConstantUtils.getUUID();
 		order.setOid(uuid);
 		try{
@@ -69,8 +72,11 @@ public class OrderServiceImpl implements OrderService {
 				log.error("消息入库失败");
 				return  new BaseModel().setCode(500).setMessage("消息入库失败").setResult("fail");
 			}
-			//发送消息， 将订单ID作为消息唯一ID
-			rabbitTemplate.convertAndSend(exchange,routingKey,JSON.toJSONString(order),new CorrelationData(uuid));
+			String orderMsg = JSON.toJSONString(order);
+			//消息体封装，并设置消息唯一ID
+			Message message = MessageBuilder.withBody(orderMsg.getBytes()).setMessageId(uuid).build();
+			//发送消息
+			rabbitTemplate.convertAndSend(exchange, routingKey, message, new CorrelationData(uuid));
 			order.setOrderInfo(null);
 			//不管消息是否推送成功，只要消息入库即可，即使推送不成功仍有补偿机制保障
 			return new BaseModel().setCode(200).setMessage("消息推送成功").setResult("success").setData(order);

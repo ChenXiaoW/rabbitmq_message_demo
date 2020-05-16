@@ -3,6 +3,8 @@ package ink.cwblog.producter.job;
 import ink.cwblog.producter.dao.MessageLogDAO;
 import ink.cwblog.producter.model.MessageLog;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +58,9 @@ public class OrderMessageReliableJob {
 				if (updateStatus == 0) {
 					continue;
 				}
-				rabbitTemplate.convertAndSend(messageLog.getExchange(), messageLog.getRoutingKey(), messageLog.getMessage(), new CorrelationData(messageLog.getMessageId()));
+				//消息体封装，并设置消息ID
+				Message message = MessageBuilder.withBody(messageLog.getMessage().getBytes()).setMessageId(messageLog.getMessageId()).build();
+				rabbitTemplate.convertAndSend(messageLog.getExchange(), messageLog.getRoutingKey(), message, new CorrelationData(messageLog.getMessageId()));
 			}
 		} catch (Exception e) {
 			log.error("扫描作业异常：{}", e);

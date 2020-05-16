@@ -31,8 +31,11 @@ spring:
     password: guest
     virtual-host: test
     connection-timeout: 15000
-    publisher-returns: true
-    publisher-confirm-type: correlated
+    publisher-returns: true # \u5F00\u542Freturn \u673A\u5236
+    publisher-confirm-type: correlated #\u5F00\u542Fconfirm\u786E\u8BA4\u6A21\u5F0F
+    # \u8BE5\u914D\u7F6E\u4F1A\u4F7Freturn \u673A\u5236\u5931\u6548\uFF0C\u8BF7\u5728rabbitTemplate\u4E2D\u624B\u52A8\u8BBE\u7F6Emandatory\u4E3Atrue
+    # template:
+    #   mandatory: true #\u8BBE\u7F6E\u6D88\u606F\u6295\u9012\u5931\u8D25\u540E\u4E0D\u7ACB\u5373\u5220\u9664\u3002
 
 mybatis:
   type-aliases-package: ink.cwblog.producter.model
