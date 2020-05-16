@@ -15,14 +15,9 @@ spring:
       max-active: 10
       initial-size: 4
       max-wait: 600
-      # \u7528\u6765\u68C0\u6D4B\u8FDE\u63A5\u662F\u5426\u6709\u6548\u7684sql\uFF0C\u8981\u6C42\u662F\u4E00\u4E2A\u67E5\u8BE2\u8BED\u53E5\uFF0C\u5E38\u7528select 'x'\u3002
-      # \u5982\u679CvalidationQuery\u4E3Anull\uFF0CtestOnBorrow\u3001testOnReturn\u3001testWhileIdle\u90FD\u4E0D\u4F1A\u8D77\u4F5C\u7528\u3002
       validation-query: SELECT 1
-      # \u7533\u8BF7\u8FDE\u63A5\u65F6\u6267\u884CvalidationQuery\u68C0\u6D4B\u8FDE\u63A5\u662F\u5426\u6709\u6548 \u9ED8\u8BA4\u4E3Atrue
       test-on-borrow: true
-      # \u5F52\u8FD8\u8FDE\u63A5\u65F6\u6267\u884CvalidationQuery\u68C0\u6D4B\u8FDE\u63A5\u662F\u5426\u6709\u6548 \u9ED8\u8BA4\u4E3Afalse
       test-on-return: false
-      # \u7533\u8BF7\u8FDE\u63A5\u7684\u65F6\u5019\u68C0\u6D4B\uFF0C\u5982\u679C\u7A7A\u95F2\u65F6\u95F4\u5927\u4E8EtimeBetweenEvictionRunsMillis\uFF0C\u6267\u884CvalidationQuery\u68C0\u6D4B\u8FDE\u63A5\u662F\u5426\u6709\u6548\u3002
       test-while-idle: true
   rabbitmq:
     host: 127.0.0.1
@@ -31,11 +26,11 @@ spring:
     password: guest
     virtual-host: test
     connection-timeout: 15000
-    publisher-returns: true # \u5F00\u542Freturn \u673A\u5236
-    publisher-confirm-type: correlated #\u5F00\u542Fconfirm\u786E\u8BA4\u6A21\u5F0F
-    # \u8BE5\u914D\u7F6E\u4F1A\u4F7Freturn \u673A\u5236\u5931\u6548\uFF0C\u8BF7\u5728rabbitTemplate\u4E2D\u624B\u52A8\u8BBE\u7F6Emandatory\u4E3Atrue
+    publisher-returns: true # 开启return
+    publisher-confirm-type: correlated #开启confirm
+    # 在此开启会导致return 机制失效 ，请手动开启
     # template:
-    #   mandatory: true #\u8BBE\u7F6E\u6D88\u606F\u6295\u9012\u5931\u8D25\u540E\u4E0D\u7ACB\u5373\u5220\u9664\u3002
+    #   mandatory: true #消息投递到broker失败后，不立即删除
 
 mybatis:
   type-aliases-package: ink.cwblog.producter.model
