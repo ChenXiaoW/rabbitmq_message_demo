@@ -35,7 +35,8 @@ spring:
         prefetch: 1 # 每次消费的最大消息数
         concurrency: 3 # 监听的最小队列数
         max-concurrency: 5 #监听的最大队列数
-        # 重试机制
+        # 重试机制 这里的重试，指的是springboot的机制，跟rabbitmq本身没有关系，也就是spring在代码中去捕获你没有处理的异常，
+        # 注意：如果需要重试的话不能使用Nack，直接抛出异常。
         retry:
           enabled: true # 开启重试
           max-attempts: 3 # 最大重试次数
